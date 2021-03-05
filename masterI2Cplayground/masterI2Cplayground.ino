@@ -2,7 +2,7 @@
 
 #define SLAVE_ADDR 9
 
-#define ANSWERSIZE 5
+#define ANSWERSIZE 1
 int buttonPin = 7;
 int buttonState = 0;
 
