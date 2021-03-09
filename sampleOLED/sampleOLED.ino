@@ -27,7 +27,7 @@ void setup() {
   display.setTextColor(WHITE);
   display.setCursor(0, 10);
   // Display static text
-  display.println("Hello, world!");
+  display.println("Hi!");
   display.display(); 
 }
 
