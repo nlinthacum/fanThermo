@@ -6,6 +6,7 @@
 
 
 
+
 #include <DS3232RTC.h>      // https://github.com/JChristensen/DS3232RTC
 DS3232RTC myRTC;
 
@@ -70,6 +71,7 @@ void loop() {
  setTemp();
  displayRTC();
  displayDesiredTemp();
+ displayMode(3);
  
  button1State= digitalRead(button1);
  Serial.print("Butoon 1: ");
@@ -82,6 +84,51 @@ void loop() {
 
   
 }
+
+void displayMode(int mode)
+{
+    display.setTextSize(1);
+    display.setCursor(0, 55);
+
+    switch(mode) {
+        case 1:
+          display.setTextColor(BLACK, WHITE);
+          display.print("off");
+          display.setTextColor(WHITE, BLACK);
+          display.print("    ");
+          display.print("set");
+          display.print("    ");
+          display.print("cooling");
+
+        case 2:
+          display.setTextColor(WHITE, BLACK);
+          display.print("off");
+          display.print("    ");
+          display.setTextColor(BLACK, WHITE);
+          display.print("set");
+          display.setTextColor(WHITE, BLACK);
+          display.print("    ");
+          display.print("cooling");
+
+      case 3:
+          display.setTextColor(WHITE, BLACK);
+          display.print("off");
+          display.print("    ");
+          display.print("set");
+          display.print("    ");
+          display.setTextColor(BLACK, WHITE);
+          display.print("cooling");
+      
+    }
+
+   
+   
+  
+    display.display();
+}
+
+
+
 
 
 void setTemp()
