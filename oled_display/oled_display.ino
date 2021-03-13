@@ -19,8 +19,10 @@ DS3232RTC myRTC;
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
-#define  button1 8
-#define  button2 9
+#define  button1 8 //down temp; button states will be inverted since using internal pull-up resistor
+#define  button2 9 //up temp
+
+
 
   int button1State;
   int button2State;
@@ -57,7 +59,7 @@ void setup(){
   display.clearDisplay();
   delay(2000);
   displayRTC();
-  delay(1000);
+
   
  
 }
@@ -65,27 +67,49 @@ void setup(){
 
   
 void loop() {
+ setTemp();
  displayRTC();
- displayDesiredTemp(desiredTemp);
+ displayDesiredTemp();
  
  button1State= digitalRead(button1);
+ Serial.print("Butoon 1: ");
  Serial.println(button1State);
  button2State= digitalRead(button2);
+ Serial.print("Butoon 2: ");
  Serial.println(button2State);
- delay(20);
+ delay(5);
  
 
   
 }
 
 
+void setTemp()
+{
+  if (desiredTemp == 0)
+  {
+    desiredTemp = currentTemp;
+  }
+  if (button2State == 0)
+  {
+    desiredTemp = desiredTemp + 0.05;
+    
+  }
+
+  if (button1State == 0)
+  {
+    desiredTemp = desiredTemp - 0.05;
+  }
+  
+}
 
 
 
-void displayDesiredTemp(float desiredTemp)
+
+void displayDesiredTemp()
 {
     display.setTextSize(1);
-    display.setTextColor(WHITE);
+    display.setTextColor(WHITE, BLACK);
    // display.setCursor(0, 0);
     display.println("Desired Temp:");
     display.setTextSize(2);
@@ -115,11 +139,11 @@ void displayRTC()
     //Serial.print(fahrenheit);
     //Serial.println("F");
 
-    delay(1000);
+   delay(50);
     
 
     display.setTextSize(1);
-    display.setTextColor(WHITE);
+    display.setTextColor(WHITE, BLACK);
     display.setCursor(0, 0);
     display.println("Current Temp:");
     display.setTextSize(2);
