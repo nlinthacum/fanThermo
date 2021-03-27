@@ -88,32 +88,24 @@ void loop() {
 
    
  
-  sendIR();
+  //sendIR();
  
 
 
-  Serial.println("here");
- setTemp();
- //displayRTC();
- //displayDesiredTemp();
- //displayMode(3);
+
+  setTemp();
+
+ displayDesiredTemp();
+ displayMode(3);
+
+ //Serial.println("don");
+  
  //display.display();
-
- 
- 
- button1State= digitalRead(button1);
- Serial.print("Button 1: ");
- Serial.println(button1State);
- button2State= digitalRead(button2);
- Serial.print("Button 2: ");
- Serial.println(button2State);
- delay(5);
-
 
   displayRTC();
 
-  display.display();
- 
+
+
 
   
 }
@@ -123,26 +115,12 @@ void sendIR()
 {
    int khz = 38;// 38kHz carrier frequency for the NEC protocol
    unsigned int On[] ={1250,400, 1250,400, 450,1250, 1250,400, 1250,400, 450,1250, 400,1250, 450,1200, 450,1250, 400,1250, 450,1200, 1300};  // Power 
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   
+   for (int i = 0; i < 16; i++)
+   {
+     irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   }
+ 
 }
 
 void displayMode(int mode)
@@ -180,9 +158,6 @@ void displayMode(int mode)
           display.print("cooling");
       
     }
-
-   
-   
   
     display.display();
 }
@@ -193,6 +168,10 @@ void displayMode(int mode)
 
 void setTemp()
 {
+   button1State = digitalRead(button1);
+   button2State = digitalRead(button2);
+
+  
   if (desiredTemp == 0)
   {
     desiredTemp = currentTemp;
@@ -207,7 +186,7 @@ void setTemp()
   {
     desiredTemp = desiredTemp - 0.05;
   }
-  
+  Serial.println(button1State);
 }
 
 
@@ -235,11 +214,11 @@ void draw_text(byte x_pos, byte y_pos, char *text, byte text_size) {
 void displayRTC()
 {
     char buf[40];
-    time_t t = myRTC.get();
+    //time_t t = myRTC.get();
     float celsius = myRTC.temperature() / 4.0;
     currentTemp = celsius * 9.0 / 5.0 + 32.0;
-    sprintf(buf, "%.2d:%.2d:%.2d %.2d%s%d ",
-        hour(t), minute(t), second(t), day(t), monthShortStr(month(t)), year(t));
+    //sprintf(buf, "%.2d:%.2d:%.2d %.2d%s%d ",
+       // hour(t), minute(t), second(t), day(t), monthShortStr(month(t)), year(t));
     //Serial.print(buf);
     //Serial.print(celsius);
     //Serial.print("C ");
@@ -251,9 +230,15 @@ void displayRTC()
 
     display.setTextSize(1);
     display.setTextColor(WHITE, BLACK);
+
+     
     display.setCursor(0, 0);
     display.println("Current Temp:");
+   //Serial.println("here!!4555!");
+
+     
     display.setTextSize(2);
     display.println(currentTemp);
+     
     display.display();
 }
