@@ -3,7 +3,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Fonts/FreeSerif9pt7b.h>
-
+#include <IRremote.h>
 
 
 
@@ -17,23 +17,29 @@ DS3232RTC myRTC;
 #define OLED_RESET 4
 
  #define SCREEN_ADDRESS 0x3C 
+ 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+
 
 
 #define  button1 8 //down temp; button states will be inverted since using internal pull-up resistor
 #define  button2 9 //up temp
 
 
+IRsend irsend;
+
 
   int button1State;
   int button2State;
   float desiredTemp;
   float currentTemp;
-
+   
 void setup(){
  
   Serial.begin(9600);
   Wire.begin();
+ 
 
   pinMode(button1, INPUT);
   digitalWrite(button1, HIGH);
@@ -41,25 +47,36 @@ void setup(){
   pinMode(button2, INPUT);
   digitalWrite(button2, HIGH);
 
+
   
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   myRTC.begin();
 
- display.display();
+
+
+  display.display();
   delay(2000); // Pause for 2 seconds
+
+    
+
 
   // Clear the buffer
   display.clearDisplay();
 
+
+
   // Draw a single pixel in white
   display.drawPixel(10, 10, SSD1306_WHITE);
+
+     
 
   // Show the display buffer on the screen. You MUST call display() after
   // drawing commands to make them visible on screen!
   display.display();
   display.clearDisplay();
   delay(2000);
-  displayRTC();
+ 
+
 
   
  
@@ -68,21 +85,64 @@ void setup(){
 
   
 void loop() {
+
+   
+ 
+  sendIR();
+ 
+
+
+  Serial.println("here");
  setTemp();
- displayRTC();
- displayDesiredTemp();
- displayMode(3);
+ //displayRTC();
+ //displayDesiredTemp();
+ //displayMode(3);
+ //display.display();
+
+ 
  
  button1State= digitalRead(button1);
- Serial.print("Butoon 1: ");
+ Serial.print("Button 1: ");
  Serial.println(button1State);
  button2State= digitalRead(button2);
- Serial.print("Butoon 2: ");
+ Serial.print("Button 2: ");
  Serial.println(button2State);
  delay(5);
+
+
+  displayRTC();
+
+  display.display();
  
 
   
+}
+
+
+void sendIR()
+{
+   int khz = 38;// 38kHz carrier frequency for the NEC protocol
+   unsigned int On[] ={1250,400, 1250,400, 450,1250, 1250,400, 1250,400, 450,1250, 400,1250, 450,1200, 450,1250, 400,1250, 450,1200, 1300};  // Power 
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+   irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
 }
 
 void displayMode(int mode)
