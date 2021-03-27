@@ -75,6 +75,8 @@ void setup(){
   display.display();
   display.clearDisplay();
   delay(2000);
+
+  displayMode(1);
  
 
 
@@ -88,27 +90,50 @@ void loop() {
 
    
  
-  //sendIR();
+  
  
 
-
+  
 
   setTemp();
 
- displayDesiredTemp();
- displayMode(3);
+ 
 
- //Serial.println("don");
+ displayDesiredTemp();
+
+
+ Serial.println("don");
   
- //display.display();
+  display.display();
 
   displayRTC();
 
+  //delay(2000);
+
+
+  //decideToggle(desiredTemp, currentTemp);  //line causing issues
 
 
 
   
 }
+
+void decideToggle(float desiredTemp, float currentTemp)
+{
+  if ((currentTemp - desiredTemp) > 1) {
+    sendIR(); //turn on
+    Serial.println("Turning on");
+    displayMode(3);
+    display.display();
+  }
+
+  
+  //if ((currentTemp - desiredTemp) >= -0.5) {
+   // sendIR();
+   // displayMode(1);
+ // }
+}
+
 
 
 void sendIR()
@@ -186,7 +211,6 @@ void setTemp()
   {
     desiredTemp = desiredTemp - 0.05;
   }
-  Serial.println(button1State);
 }
 
 
@@ -234,7 +258,7 @@ void displayRTC()
      
     display.setCursor(0, 0);
     display.println("Current Temp:");
-   //Serial.println("here!!4555!");
+   
 
      
     display.setTextSize(2);
