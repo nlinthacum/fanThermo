@@ -26,14 +26,19 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define  button1 8 //down temp; button states will be inverted since using internal pull-up resistor
 #define  button2 9 //up temp
 
+#define IR_SEND_PIN A5
+
 
 IRsend irsend;
+
+//irsend.enableIROut(A5);
 
 
   int button1State;
   int button2State;
   float desiredTemp;
   float currentTemp;
+  int mode = 1; //for which cooling mode
    
 void setup(){
  
@@ -76,7 +81,7 @@ void setup(){
   display.clearDisplay();
   delay(2000);
 
-  displayMode(1);
+  displayMode(mode);
  
 
 
@@ -102,7 +107,7 @@ void loop() {
  displayDesiredTemp();
 
 
- Serial.println("don");
+
   
   display.display();
 
@@ -111,16 +116,22 @@ void loop() {
   //delay(2000);
 
 
-  //decideToggle(desiredTemp, currentTemp);  //line causing issues
+
+ decideToggle(desiredTemp, currentTemp, mode);  //line causing issues
+
+   
 
 
 
   
 }
 
-void decideToggle(float desiredTemp, float currentTemp)
+
+
+
+void decideToggle(float desiredTemp, float currentTemp, int mode)
 {
-  if ((currentTemp - desiredTemp) > 1) {
+  if (((currentTemp - desiredTemp) > 1) && (mode == 2)) {
     sendIR(); //turn on
     Serial.println("Turning on");
     displayMode(3);
