@@ -92,15 +92,49 @@ void setup(){
 
   
 void loop() {
-
+   
+displayRTC();
    
  
-  
+  if (mode == 1)
+  {
+    button1State = digitalRead(button1);
+    button2State = digitalRead(button2);
  
+    while (button2State != 0) 
+    {
+      
+      button1State = digitalRead(button1);
+      button2State = digitalRead(button2);
+      Serial.println(button1State);
+      if (button1State == 0) {
+      switch (mode)
+      {
+        case 1: mode = 2;
+                break;
+        case 2: mode = 3;
+                break;
+        case 3: mode = 1;
+                break;
+      }
+      }
+
+      displayMode(mode);
+      delay(150);
+
+     
+    }
+  }
+
+
+ 
+  
+
+
 
   
 
-  setTemp();
+  setTemp(mode);
 
  
 
@@ -111,13 +145,13 @@ void loop() {
   
   display.display();
 
-  displayRTC();
+  
 
   //delay(2000);
 
 
 
- decideToggle(desiredTemp, currentTemp, mode);  //line causing issues
+ decideToggle(desiredTemp, currentTemp, mode);  
 
    
 
@@ -131,7 +165,7 @@ void loop() {
 
 void decideToggle(float desiredTemp, float currentTemp, int mode)
 {
-  if (((currentTemp - desiredTemp) > 1) && (mode == 2)) {
+  if (((currentTemp - desiredTemp) > 1) && ((mode == 2) || (mode == 3))) {
     sendIR(); //turn on
     Serial.println("Turning on");
     displayMode(3);
@@ -139,10 +173,10 @@ void decideToggle(float desiredTemp, float currentTemp, int mode)
   }
 
   
-  //if ((currentTemp - desiredTemp) >= -0.5) {
-   // sendIR();
-   // displayMode(1);
- // }
+  if ((currentTemp - desiredTemp) >= -0.5) {
+    sendIR();
+    displayMode(1);
+  }
 }
 
 
@@ -202,23 +236,21 @@ void displayMode(int mode)
 
 
 
-void setTemp()
+void setTemp(int mode)
 {
    button1State = digitalRead(button1);
    button2State = digitalRead(button2);
-
-  
-  if (desiredTemp == 0)
+  if (desiredTemp == 0 || mode == 1)
   {
     desiredTemp = currentTemp;
   }
-  if (button2State == 0)
+  if ((button2State == 0)  && ((mode == 2) || (mode == 3)))
   {
     desiredTemp = desiredTemp + 0.05;
     
   }
 
-  if (button1State == 0)
+  if ((button1State == 0) && ((mode == 2) || (mode == 3)))
   {
     desiredTemp = desiredTemp - 0.05;
   }
