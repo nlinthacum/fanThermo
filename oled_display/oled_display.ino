@@ -94,19 +94,25 @@ void setup(){
 void loop() {
    
 displayRTC();
+
+
+
    
  
   if (mode == 1)
   {
-    button1State = digitalRead(button1);
-    button2State = digitalRead(button2);
+   // button1State = digitalRead(button1);
+    //button2State = digitalRead(button2);
+
+ 
  
     while (button2State != 0) 
     {
+         Serial.print("Mode: ");
+         Serial.println(mode);
       
       button1State = digitalRead(button1);
       button2State = digitalRead(button2);
-      Serial.println(button1State);
       if (button1State == 0) {
       switch (mode)
       {
@@ -128,17 +134,17 @@ displayRTC();
 
 
  
-  
+   displayMode(mode);
 
 
 
-  
 
-  setTemp(mode);
+ // setTemp(mode);
 
  
 
  displayDesiredTemp();
+
 
 
 
@@ -151,7 +157,7 @@ displayRTC();
 
 
 
- decideToggle(desiredTemp, currentTemp, mode);  
+ //decideToggle(desiredTemp, currentTemp, mode);  
 
    
 
@@ -165,7 +171,7 @@ displayRTC();
 
 void decideToggle(float desiredTemp, float currentTemp, int mode)
 {
-  if (((currentTemp - desiredTemp) > 1) && ((mode == 2) || (mode == 3))) {
+  if (((currentTemp - desiredTemp) > 1) && (mode == 2)) {
     sendIR(); //turn on
     Serial.println("Turning on");
     displayMode(3);
@@ -207,6 +213,7 @@ void displayMode(int mode)
           display.print("set");
           display.print("    ");
           display.print("cooling");
+          break;
 
         case 2:
           display.setTextColor(WHITE, BLACK);
@@ -217,6 +224,7 @@ void displayMode(int mode)
           display.setTextColor(WHITE, BLACK);
           display.print("    ");
           display.print("cooling");
+          break;
 
       case 3:
           display.setTextColor(WHITE, BLACK);
@@ -226,6 +234,7 @@ void displayMode(int mode)
           display.print("    ");
           display.setTextColor(BLACK, WHITE);
           display.print("cooling");
+          break;
       
     }
   
@@ -263,11 +272,12 @@ void displayDesiredTemp()
 {
     display.setTextSize(1);
     display.setTextColor(WHITE, BLACK);
-   // display.setCursor(0, 0);
+    display.setCursor(0, 25);
     display.println("Desired Temp:");
     display.setTextSize(2);
     display.println(desiredTemp);
     display.display();
+     
 }
 
 
