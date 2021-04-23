@@ -22,8 +22,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
 
-#define  button1 8 //down temp; button states will be inverted since using internal pull-up resistor
-#define  button2 9 //up temp
+#define  button1 9 //down temp; button states will be inverted since using internal pull-up resistor
+#define  button2 8 //up temp
 
 #define IR_SEND_PIN A5
 
