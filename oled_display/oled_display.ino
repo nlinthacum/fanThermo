@@ -38,6 +38,7 @@ IRsend irsend;
   float desiredTemp;
   float currentTemp;
   int mode = 1; //for which cooling mode
+  bool fanOn = false;
    
 void setup(){
  
@@ -156,7 +157,7 @@ displayRTC();
 
 
 
- decideToggle(desiredTemp, currentTemp, mode);  
+ decideToggle(desiredTemp, currentTemp, mode, fanOn);  
 
    
 
@@ -168,19 +169,23 @@ displayRTC();
 
 
 
-void decideToggle(float desiredTemp, float currentTemp, int mode)
+void decideToggle(float desiredTemp, float currentTemp, int mode, bool& fanOn)
 {
-  if (((currentTemp - desiredTemp) > 1) && (mode == 2)) {
+  if (((currentTemp - desiredTemp) > 0.5) && (mode == 2) && !fanOn) {
     //sendIR(); //turn on
-    //Serial.println("Turning on");
+    Serial.println("Turning on");
+    mode = 1;
+    fanOn = true;
+
 
   }
 
   
-  if ((currentTemp - desiredTemp) >= -0.5) {
+  if (((currentTemp - desiredTemp) <= -0.5) && fanOn) {
     //sendIR();
-    //displayMode(1);
-    // Serial.println("Turning off");
+    Serial.println("Turning off");
+    mode = 1;
+    fanOn = false;
   }
 }
 
@@ -240,13 +245,13 @@ void setTemp(int mode)
   {
     desiredTemp = currentTemp;
   }
-  if ((button2State == 0)  && ((mode == 2) || (mode == 3)))
+  if ((button2State == 0)  && ((mode == 2) ))
   {
     desiredTemp = desiredTemp + 0.05;
     
   }
 
-  if ((button1State == 0) && ((mode == 2) || (mode == 3)))
+  if ((button1State == 0) && ((mode == 2) ))
   {
     desiredTemp = desiredTemp - 0.05;
   }
