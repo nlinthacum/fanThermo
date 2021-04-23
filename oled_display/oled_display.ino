@@ -156,7 +156,7 @@ displayRTC();
 
 
 
- //decideToggle(desiredTemp, currentTemp, mode);  
+ decideToggle(desiredTemp, currentTemp, mode);  
 
    
 
@@ -171,16 +171,16 @@ displayRTC();
 void decideToggle(float desiredTemp, float currentTemp, int mode)
 {
   if (((currentTemp - desiredTemp) > 1) && (mode == 2)) {
-    sendIR(); //turn on
-    Serial.println("Turning on");
-   // displayMode(3);
-    display.display();
+    //sendIR(); //turn on
+    //Serial.println("Turning on");
+
   }
 
   
   if ((currentTemp - desiredTemp) >= -0.5) {
-    sendIR();
-    displayMode(1);
+    //sendIR();
+    //displayMode(1);
+    // Serial.println("Turning off");
   }
 }
 
@@ -191,7 +191,7 @@ void sendIR()
    int khz = 38;// 38kHz carrier frequency for the NEC protocol
    unsigned int On[] ={1250,400, 1250,400, 450,1250, 1250,400, 1250,400, 450,1250, 400,1250, 450,1200, 450,1250, 400,1250, 450,1200, 1300};  // Power 
    
-   for (int i = 0; i < 16; i++)
+   for (int i = 0; i < 10; i++) //need to play around with this value
    {
      irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
    }
