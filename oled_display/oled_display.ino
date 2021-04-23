@@ -22,8 +22,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
 
-#define  button1 8 //down temp; button states will be inverted since using internal pull-up resistor
-#define  button2 9 //up temp
+#define  button1 9 //down temp; button states will be inverted since using internal pull-up resistor
+#define  button2 8 //up temp
 
 #define IR_SEND_PIN A5
 
@@ -38,6 +38,7 @@ IRsend irsend;
   float desiredTemp;
   float currentTemp;
   int mode = 1; //for which cooling mode
+  bool fanOn = false;
    
 void setup(){
  
@@ -116,10 +117,9 @@ displayRTC();
       {
         case 1: mode = 2;
                 break;
-        case 2: mode = 3;
+        case 2: mode = 1;
                 break;
-        case 3: mode = 1;
-                break;
+       
       }
       }
 
@@ -157,10 +157,7 @@ displayRTC();
 
 
 
- //decideToggle(desiredTemp, currentTemp, mode);  
-
-   
-
+ decideToggle(desiredTemp, currentTemp, mode, fanOn);  
 
 
   
@@ -169,19 +166,23 @@ displayRTC();
 
 
 
-void decideToggle(float desiredTemp, float currentTemp, int mode)
+void decideToggle(float desiredTemp, float currentTemp, int mode, bool& fanOn)
 {
-  if (((currentTemp - desiredTemp) > 1) && (mode == 2)) {
+  if (((currentTemp - desiredTemp) > 0.5) && (mode == 2) && !fanOn) {
     sendIR(); //turn on
     Serial.println("Turning on");
-   // displayMode(3);
-    display.display();
+    mode = 1;
+    fanOn = true;
+
+
   }
 
   
-  if ((currentTemp - desiredTemp) >= -0.5) {
+  if (((currentTemp - desiredTemp) <= -0.5) && fanOn) {
     sendIR();
-    displayMode(1);
+    Serial.println("Turning off");
+    mode = 1;
+    fanOn = false;
   }
 }
 
@@ -192,10 +193,11 @@ void sendIR()
    int khz = 38;// 38kHz carrier frequency for the NEC protocol
    unsigned int On[] ={1250,400, 1250,400, 450,1250, 1250,400, 1250,400, 450,1250, 400,1250, 450,1200, 450,1250, 400,1250, 450,1200, 1300};  // Power 
    
-   for (int i = 0; i < 16; i++)
-   {
-     irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   }
+   //for (int i = 0; i < 10; i++) //need to play around with this value //************
+   //{
+    //irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+  // }
+  // Serial.println("Toggled");
  
 }
 
@@ -212,7 +214,6 @@ void displayMode(int mode)
           display.print("    ");
           display.print("set");
           display.print("    ");
-          display.print("cooling");
           break;
 
         case 2:
@@ -223,17 +224,6 @@ void displayMode(int mode)
           display.print("set");
           display.setTextColor(WHITE, BLACK);
           display.print("    ");
-          display.print("cooling");
-          break;
-
-      case 3:
-          display.setTextColor(WHITE, BLACK);
-          display.print("off");
-          display.print("    ");
-          display.print("set");
-          display.print("    ");
-          display.setTextColor(BLACK, WHITE);
-          display.print("cooling");
           break;
       
     }
@@ -253,13 +243,13 @@ void setTemp(int mode)
   {
     desiredTemp = currentTemp;
   }
-  if ((button2State == 0)  && ((mode == 2) || (mode == 3)))
+  if ((button2State == 0)  && ((mode == 2) ))
   {
     desiredTemp = desiredTemp + 0.05;
     
   }
 
-  if ((button1State == 0) && ((mode == 2) || (mode == 3)))
+  if ((button1State == 0) && ((mode == 2) ))
   {
     desiredTemp = desiredTemp - 0.05;
   }
@@ -294,14 +284,7 @@ void displayRTC()
     //time_t t = myRTC.get();
     float celsius = myRTC.temperature() / 4.0;
     currentTemp = celsius * 9.0 / 5.0 + 32.0;
-    //sprintf(buf, "%.2d:%.2d:%.2d %.2d%s%d ",
-       // hour(t), minute(t), second(t), day(t), monthShortStr(month(t)), year(t));
-    //Serial.print(buf);
-    //Serial.print(celsius);
-    //Serial.print("C ");
-    //Serial.print(fahrenheit);
-    //Serial.println("F");
-
+  
    delay(50);
     
 
