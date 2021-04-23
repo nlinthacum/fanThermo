@@ -22,8 +22,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
 
-#define  button1 8 //down temp; button states will be inverted since using internal pull-up resistor
-#define  button2 9 //up temp
+#define  button1 9 //down temp; button states will be inverted since using internal pull-up resistor
+#define  button2 8 //up temp
 
 #define IR_SEND_PIN A5
 
@@ -116,10 +116,9 @@ displayRTC();
       {
         case 1: mode = 2;
                 break;
-        case 2: mode = 3;
+        case 2: mode = 1;
                 break;
-        case 3: mode = 1;
-                break;
+       
       }
       }
 
@@ -212,7 +211,6 @@ void displayMode(int mode)
           display.print("    ");
           display.print("set");
           display.print("    ");
-          display.print("cooling");
           break;
 
         case 2:
@@ -223,17 +221,6 @@ void displayMode(int mode)
           display.print("set");
           display.setTextColor(WHITE, BLACK);
           display.print("    ");
-          display.print("cooling");
-          break;
-
-      case 3:
-          display.setTextColor(WHITE, BLACK);
-          display.print("off");
-          display.print("    ");
-          display.print("set");
-          display.print("    ");
-          display.setTextColor(BLACK, WHITE);
-          display.print("cooling");
           break;
       
     }
@@ -294,14 +281,7 @@ void displayRTC()
     //time_t t = myRTC.get();
     float celsius = myRTC.temperature() / 4.0;
     currentTemp = celsius * 9.0 / 5.0 + 32.0;
-    //sprintf(buf, "%.2d:%.2d:%.2d %.2d%s%d ",
-       // hour(t), minute(t), second(t), day(t), monthShortStr(month(t)), year(t));
-    //Serial.print(buf);
-    //Serial.print(celsius);
-    //Serial.print("C ");
-    //Serial.print(fahrenheit);
-    //Serial.println("F");
-
+  
    delay(50);
     
 
