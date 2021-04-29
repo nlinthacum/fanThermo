@@ -38,7 +38,7 @@ IRsend irsend;
   float desiredTemp;
   float currentTemp;
   int mode = 1; //for which cooling mode
-  bool fanOn = false;
+  int fanOn = 0; //0 for off, 1 for on
    
 void setup(){
  
@@ -160,8 +160,8 @@ displayRTC();
 
 
 
- //decideToggle(desiredTemp, currentTemp, mode, fanOn); 
- decideToggle(desiredTemp, currentTemp, mode);   
+ fanOn = decideToggle(desiredTemp, currentTemp, mode, fanOn); 
+   
 
   //sendIR(); //turn on
 
@@ -172,17 +172,24 @@ displayRTC();
 
 
 
-void decideToggle(float desiredTemp, float currentTemp, int mode)
+int decideToggle(float desiredTemp, float currentTemp, int mode, int fanOn)
 {
-  if (((currentTemp - desiredTemp) > 1) && (mode == 2)) {
+  if (((currentTemp - desiredTemp) > 1) && (mode == 2) && (fanOn == 0)) {
     sendIR(); //turn on
     Serial.println("Turning on");
     display.display();
+    return 1;
   }
 
   
-  if ((currentTemp - desiredTemp) >= -0.5) {
+  if (((currentTemp - desiredTemp) <= -0.5) && (fanOn == 1)) {
     sendIR();
+    Serial.println("Turning off");
+    return 0;
+  }
+
+  else {
+    return fanOn; //returns what it currently is, when it was passed in
   }
 }
 
