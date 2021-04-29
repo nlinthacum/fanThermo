@@ -114,7 +114,7 @@ displayRTC();
     {
       
        
-      
+     // displayRTC();
       button1State = digitalRead(button1);
       button2State = digitalRead(button2);
       if (button1State == 0) {
@@ -162,9 +162,10 @@ displayRTC();
 
 
 
-// decideToggle(desiredTemp, currentTemp, mode, fanOn);  
+ //decideToggle(desiredTemp, currentTemp, mode, fanOn); 
+ decideToggle(desiredTemp, currentTemp, mode);   
 
-   
+  sendIR(); //turn on
 
 
   
@@ -173,26 +174,19 @@ displayRTC();
 
 
 
-void decideToggle(float desiredTemp, float currentTemp, int mode, bool& fanOn)
+void decideToggle(float desiredTemp, float currentTemp, int mode)
 {
-  if (((currentTemp - desiredTemp) > 0.5) && (mode == 2) && !fanOn) {
+  if (((currentTemp - desiredTemp) > 1) && (mode == 2)) {
     sendIR(); //turn on
-    
-   // Serial.println("Turning on");
-    //fanOn = true;
-
-
+    Serial.println("Turning on");
+   // displayMode(3);
+    display.display();
   }
 
   
-  if (((currentTemp - desiredTemp) <= -0.5) && fanOn) {
-
-   // sendIR();
-
-    //sendIR();
-//
-   // Serial.println("Turning off");
-    //fanOn = false;
+  if ((currentTemp - desiredTemp) >= -0.5) {
+    sendIR();
+    displayMode(1);
   }
 }
 
@@ -200,6 +194,7 @@ void decideToggle(float desiredTemp, float currentTemp, int mode, bool& fanOn)
 
 void sendIR()
 {
+  
    int khz = 38;// 38kHz carrier frequency for the NEC protocol
    unsigned int On[] ={1250,400, 1250,400, 450,1250, 1250,400, 1250,400, 450,1250, 400,1250, 450,1200, 450,1250, 400,1250, 450,1200, 1300};  // Power 
    
@@ -208,14 +203,14 @@ void sendIR()
    {
     irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
    }
-   Serial.println("Toggled");
-
+  // Serial.println("Toggled");
+/*
    for (int i = 0; i < 10; i++) //need to play around with this value
    {
      irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
    }
 
- 
+ */
 }
 
 void displayMode(int mode)
