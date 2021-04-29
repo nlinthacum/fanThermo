@@ -162,7 +162,7 @@ displayRTC();
 
 
 
-// decideToggle(desiredTemp, currentTemp, mode, fanOn);  
+ decideToggle(desiredTemp, currentTemp, mode, fanOn);  
 
    
 
@@ -204,11 +204,11 @@ void sendIR()
    unsigned int On[] ={1250,400, 1250,400, 450,1250, 1250,400, 1250,400, 450,1250, 400,1250, 450,1200, 450,1250, 400,1250, 450,1200, 1300};  // Power 
    
 
-   for (int i = 0; i < 10; i++) //need to play around with this value //************
-   {
-    irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
-   }
-   Serial.println("Toggled");
+   //for (int i = 0; i < 10; i++) //need to play around with this value //************
+   //{
+    //irsend.sendRaw(On,sizeof(On)/sizeof(int),khz);
+  // }
+  // Serial.println("Toggled");
 
    for (int i = 0; i < 10; i++) //need to play around with this value
    {
