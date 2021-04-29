@@ -112,9 +112,7 @@ displayRTC();
  
     while (button2State != 0) 
     {
-      
-       
-     // displayRTC();
+ 
       button1State = digitalRead(button1);
       button2State = digitalRead(button2);
       if (button1State == 0) {
@@ -165,7 +163,7 @@ displayRTC();
  //decideToggle(desiredTemp, currentTemp, mode, fanOn); 
  decideToggle(desiredTemp, currentTemp, mode);   
 
-  sendIR(); //turn on
+  //sendIR(); //turn on
 
 
   
@@ -179,14 +177,12 @@ void decideToggle(float desiredTemp, float currentTemp, int mode)
   if (((currentTemp - desiredTemp) > 1) && (mode == 2)) {
     sendIR(); //turn on
     Serial.println("Turning on");
-   // displayMode(3);
     display.display();
   }
 
   
   if ((currentTemp - desiredTemp) >= -0.5) {
     sendIR();
-    displayMode(1);
   }
 }
 
@@ -215,6 +211,7 @@ void sendIR()
 
 void displayMode(int mode)
 {
+  
     display.setTextSize(1);
     display.setCursor(0, 55);
 
@@ -241,6 +238,7 @@ void displayMode(int mode)
     }
   
     display.display();
+    
 }
 
 
