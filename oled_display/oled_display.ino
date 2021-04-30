@@ -12,25 +12,19 @@ DS3232RTC myRTC;
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
-
 #define OLED_RESET 4
-
- #define SCREEN_ADDRESS 0x3C 
+#define SCREEN_ADDRESS 0x3C 
  
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
-
-
 
 #define  button1 9 //down temp; button states will be inverted since using internal pull-up resistor
 #define  button2 8 //up temp
 
 #define IR_SEND_PIN A5
 
-
 IRsend irsend;
 
-//irsend.enableIROut(A5);
+//irsend.enableIROut(A5); //no longer needed
 
 
   int button1State;
@@ -64,17 +58,14 @@ void setup(){
 
     
 
-
   // Clear the buffer
   display.clearDisplay();
-
 
 
   // Draw a single pixel in white
   display.drawPixel(10, 10, SSD1306_WHITE);
 
      
-
   // Show the display buffer on the screen. You MUST call display() after
   // drawing commands to make them visible on screen!
   display.display();
@@ -83,34 +74,19 @@ void setup(){
 
   displayMode(mode);
  
-
-
-  
- 
 }
 
 
-  
 void loop() {
-
-
-
-
  
-   
 displayRTC();
 
-
-
-   
- 
-  if (mode == 1)
+  if (mode == 1) //off mode
   {
     button1State = digitalRead(button1);
     button2State = digitalRead(button2);
  
- 
-    while (button2State != 0) 
+    while (button2State != 0) //stays in this loop until button 2 is pressed
     {
  
       button1State = digitalRead(button1);
@@ -121,15 +97,13 @@ displayRTC();
         case 1: mode = 2;
                 break;
         case 2: mode = 1;
-                break;
-       
+                break;  
       }
-      }
+     }
 
       displayMode(mode);
       delay(150);
-
-     
+      
     }
   }
   
@@ -140,41 +114,23 @@ displayRTC();
  
   displayMode(mode);
 
-
-
-
   setTemp(mode);
+   
+  displayDesiredTemp();
 
- 
-
- displayDesiredTemp();
-
-
-
-
-  
   display.display();
 
+  fanOn = decideToggle(desiredTemp, currentTemp, mode, fanOn); 
   
-
-
-
-
- fanOn = decideToggle(desiredTemp, currentTemp, mode, fanOn); 
-   
-
-  //sendIR(); //turn on
-
-
   
 }
 
 
 
-
+//decides if the fan should be toggled on or off; returns values according to its action 
 int decideToggle(float desiredTemp, float currentTemp, int mode, int fanOn)
 {
-  if (((currentTemp - desiredTemp) > 1) && (mode == 2) && (fanOn == 0)) {
+  if (((currentTemp - desiredTemp) > .5) && (mode == 2) && (fanOn == 0)) {
     sendIR(); //turn on
     Serial.println("Turning on");
     display.display();
@@ -194,7 +150,7 @@ int decideToggle(float desiredTemp, float currentTemp, int mode, int fanOn)
 }
 
 
-
+//sends the ir signal
 void sendIR()
 {
   
@@ -216,6 +172,7 @@ void sendIR()
  */
 }
 
+//displays the current mode
 void displayMode(int mode)
 {
   
@@ -248,10 +205,7 @@ void displayMode(int mode)
     
 }
 
-
-
-
-
+//changes the desired temp based off of the buttons
 void setTemp(int mode)
 {
    button1State = digitalRead(button1);
@@ -272,9 +226,7 @@ void setTemp(int mode)
   }
 }
 
-
-
-
+//displays the desired temp
 void displayDesiredTemp()
 {
     display.setTextSize(1);
@@ -287,7 +239,7 @@ void displayDesiredTemp()
      
 }
 
-
+//fxn for writing text on oLED
 void draw_text(byte x_pos, byte y_pos, char *text, byte text_size) {
   display.setCursor(x_pos, y_pos);
   display.setTextSize(text_size);
@@ -295,6 +247,7 @@ void draw_text(byte x_pos, byte y_pos, char *text, byte text_size) {
   display.display();
 }
 
+//manipulates data and disaplays frm RTC
 void displayRTC()
 {
     char buf[40];
@@ -303,16 +256,12 @@ void displayRTC()
     currentTemp = celsius * 9.0 / 5.0 + 32.0;
   
    delay(50);
-    
-
+   
     display.setTextSize(1);
     display.setTextColor(WHITE, BLACK);
 
-     
     display.setCursor(0, 0);
     display.println("Current Temp:");
-   
-
      
     display.setTextSize(2);
     display.println(currentTemp);
